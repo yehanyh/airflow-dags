@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 
 from airflow import DAG
@@ -38,5 +39,18 @@ with DAG(
         python_callable=print_world,
     )
 
+
+    # 定义一个休眠任务
+    def sleep_task():
+        print("Task is sleeping for 300 seconds...")
+        time.sleep(300)  # 休眠 300 秒
+        print("Task woke up!")
+
+
+    sleep_operator = PythonOperator(
+        task_id='sleep_task',
+        python_callable=sleep_task,
+    )
+
     # 设置任务依赖关系
-    task_hello >> task_world  # 先执行 task_hello，再执行 task_world
+    task_hello >> task_world >> sleep_operator
